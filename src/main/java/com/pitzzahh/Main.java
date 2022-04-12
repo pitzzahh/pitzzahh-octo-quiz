@@ -1,10 +1,14 @@
+package com.pitzzahh;
 
-import java.io.File;
+import exception.SpecialCharacterAnswerException;
+import exception.NumberAnswerException;
+import exception.BlankAnswerException;
 import java.io.FileNotFoundException;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.File;
 
 public class Main {
 
@@ -108,33 +112,6 @@ public class Main {
         questionsScanner.close();
         choicesScanner.close();
         answersScanner.close();
-    }
-    /**
-     * inner static class used for exception handling on blank answers.
-     * This class extends the {@code RuntimeException}
-     */
-    static class BlankAnswerException extends RuntimeException {
-        public BlankAnswerException() {
-            super("Blank Answer Not Allowed");
-        }
-    }
-    /**
-     * inner static class used for exception handling on number answers.
-     * This class extends the {@code RuntimeException}
-     */
-    static class NumberAnswerException extends RuntimeException {
-        public NumberAnswerException() {
-            super("Number Answer Not Allowed");
-        }
-    }
-    /**
-     * inner static class used for exception handling on special character answers.
-     * This class extends the {@code RuntimeException}
-     */
-    static class SpecialCharacterAnswerException extends RuntimeException {
-        public SpecialCharacterAnswerException() {
-            super("Special Character Answer Not Allowed");
-        }
     }
 
     /**
