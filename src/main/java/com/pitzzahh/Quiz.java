@@ -30,26 +30,7 @@ public class Quiz {
 
         final Scanner scanner = new Scanner(System.in);
 
-        final Path filesPath = Paths.get("src\\main\\resources"); // directory where the files are stored.
-
-        boolean running = false;
-
-        try {
-            File questionsFile = new File(filesPath + "\\questions.txt");
-            if (questionsFile.exists() && questionsFile.isFile()) {
-                File choicesFile = new File(filesPath + "\\choices.txt");
-                if (choicesFile.exists() && choicesFile.isFile()) {
-                    File answersFile = new File(filesPath + "\\answers.txt");
-                    if (answersFile.exists() && answersFile.isFile()) {
-                        answers = Process.decrypt(answersFile);
-                        importQuestions(questionsFile, choicesFile, answersFile);
-                        running = true;
-                    } else throw new AnswersNotFoundException();
-                } else throw new ChoicesNotFoundException();
-            } else throw new QuestionsNotFoundException();
-        } catch (IOException fileNotFoundException) {
-            System.out.println(RED + fileNotFoundException.getMessage() + RESET);
-        }
+        boolean running = verify();
 
         while (running) {
             runQuiz(scanner);
@@ -63,9 +44,9 @@ public class Quiz {
                         break;
                     }
                     else {
-                        if (containsSpecialCharacter(response)) throw new SpecialCharacterAnswerException();
-                        else if (isNumber(response)) throw new NumberAnswerException();
-                        else if (response.isEmpty()) throw new BlankAnswerException();
+                        if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
+                        else if (isNumber(response)) throw new NumberResponseException();
+                        else if (response.isEmpty()) throw new BlankResponseException();
                         else System.out.println(RED + "Y or N only" + RESET);
                     }
                 } catch (RuntimeException runtimeException) {
@@ -101,9 +82,9 @@ public class Quiz {
                             break;
                         }
                         else {
-                            if (containsSpecialCharacter(choice)) throw new SpecialCharacterAnswerException();
-                            else if (isNumber(choice)) throw new NumberAnswerException();
-                            else if (choice.isEmpty()) throw new BlankAnswerException();
+                            if (containsSpecialCharacter(choice)) throw new SpecialCharacterResponseException();
+                            else if (isNumber(choice)) throw new NumberResponseException();
+                            else if (choice.isEmpty()) throw new BlankResponseException();
                             else System.out.println(RED + "A B C only" + RESET);
                         }
                     } catch (Exception exception) {
@@ -120,7 +101,31 @@ public class Quiz {
     }
 
     /**
-     * Method that contains all the questions.
+     * Method that verifies the questions, choices, and answers from the file.
+     * @return {@code true} if the files are valid.
+     */
+    private static boolean verify() {
+        final Path filesPath = Paths.get("src\\main\\resources"); // directory where the files are stored.
+        try {
+            File questionsFile = new File(filesPath + "\\questions.txt");
+            if (questionsFile.exists() && questionsFile.isFile()) {
+                File choicesFile = new File(filesPath + "\\choices.txt");
+                if (choicesFile.exists() && choicesFile.isFile()) {
+                    File answersFile = new File(filesPath + "\\answers.txt");
+                    if (answersFile.exists() && answersFile.isFile()) {
+                        answers = Process.decrypt(answersFile);
+                        importQuestions(questionsFile, choicesFile, answersFile);
+                        return true;
+                    } else throw new AnswersNotFoundException();
+                } else throw new ChoicesNotFoundException();
+            } else throw new QuestionsNotFoundException();
+        } catch (IOException fileNotFoundException) {
+            System.out.println(RED + fileNotFoundException.getMessage() + RESET);
+        }
+        return false;
+    }
+    /**
+     * Method that imports all the questions, choices, and answers from the file.
      */
     private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws QuestionsNotFoundException {
         try {
