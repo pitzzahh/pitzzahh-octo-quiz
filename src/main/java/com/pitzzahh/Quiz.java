@@ -85,10 +85,10 @@ public class Quiz {
                             if (containsSpecialCharacter(choice)) throw new SpecialCharacterResponseException();
                             else if (isNumber(choice)) throw new NumberResponseException();
                             else if (choice.isEmpty()) throw new BlankResponseException();
-                            else System.out.println(RED + "A B C only" + RESET);
+                            else throw new InvalidLetterResponseException();
                         }
-                    } catch (Exception exception) {
-                        System.out.println(RED + exception.getMessage() + RESET);
+                    } catch (RuntimeException runtimeException) {
+                        System.out.println(RED + runtimeException.getMessage() + RESET);
                     }
                 }
             }
