@@ -1,9 +1,10 @@
 package com.pitzzahh;
 
-import exception.SpecialCharacterAnswerException;
-import exception.NumberAnswerException;
-import exception.BlankAnswerException;
+import exception.*;
+
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.ArrayList;
@@ -12,27 +13,42 @@ import java.io.File;
 
 public class Quiz {
 
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String YELLOW = "\u001B[33m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String CYAN = "\u001B[36m";
-
-    public static void main(String[] args) throws FileNotFoundException {
+    private static final String RESET = "\u001B[0m";
+    private static final String RED = "\u001B[31m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String PURPLE = "\u001B[35m";
+    private static final String CYAN = "\u001B[36m";
+    private static final ArrayList<String> questions = new ArrayList<>();
+    private static final ArrayList<String> choices = new ArrayList<>();
+    private static final ArrayList<String> answers = new ArrayList<>();
+    public static void main(String[] args) {
 
         final Scanner scanner = new Scanner(System.in);
-        final ArrayList<String> questions = new ArrayList<>();
-        final ArrayList<String> choices = new ArrayList<>();
-        final ArrayList<String> answers = new ArrayList<>();
 
-        loadQuestions(questions, choices, answers);
+        final Path filesPath = Paths.get("src\\main\\resources"); // directory where the files are stored.
 
-        boolean running = true;
+        boolean running = false;
+
+        try {
+            File questionsFile = new File(filesPath + "\\questions.txt");
+            if (questionsFile.exists() && questionsFile.isFile()) {
+                File choicesFile = new File(filesPath + "\\choices.txt");
+                if (choicesFile.exists() && choicesFile.isFile()) {
+                    File answersFile = new File(filesPath + "\\answers.txt");
+                    if (answersFile.exists() && answersFile.isFile()) {
+                        importQuestions(questionsFile, choicesFile, answersFile);
+                        running = true;
+                    } else throw new AnswersNotFoundException();
+                } else throw new ChoicesNotFoundException();
+            } else throw new QuestionsNotFoundException();
+        } catch (QuestionsNotFoundException | AnswersNotFoundException | ChoicesNotFoundException fileNotFoundException) {
+            System.out.println(RED + fileNotFoundException.getMessage() + RESET);
+        }
 
         while (running) {
-            runQuiz(scanner, questions, choices, answers);
+            runQuiz(scanner);
             while (true) {
                 try {
                     System.out.print(PURPLE + "PLAY AGAIN ? " + GREEN + "(" + BLUE + " Y " + YELLOW + ":" + RED + " N " + GREEN + "): ");
@@ -53,65 +69,73 @@ public class Quiz {
                 }
             }
         }
-        System.out.println("THANK YOU FOR USING MY PROGRAM");
+        System.out.println(CYAN + "THANK " + YELLOW + "YOU" + GREEN + " FOR "  + BLUE + "USING " + PURPLE + "MY " + RED + "PROGRAM");
     }
 
     /**
      * Method that start the quiz.
      * @param scanner the {@code Scanner} object needed for user input.
-     * @param questions the {@code ArrayList<String>} that contains the questions.
-     * @param choices the {@code ArrayList<String>} that contains the choices.
-     * @param answers the {@code ArrayList<String>} that contains the answers.
+     *
      */
-    private static void runQuiz(Scanner scanner, ArrayList<String> questions, ArrayList<String> choices, ArrayList<String> answers) {
-        System.out.println(GREEN + "###########################");
-        System.out.println(CYAN + "|" + PURPLE + "WELCOME TO MY SIMPLE QUIZ" + CYAN + "|");
-        System.out.println(GREEN + "###########################");
+    private static void runQuiz(Scanner scanner) {
         byte correctAnswers = 0;
-        for (int i = 0; i < questions.size(); i++) {
-            while (true) {
-                try {
-                    System.out.println(BLUE + "QUESTION NUMBER: " + RED + (i + 1) + RESET);
-                    System.out.println(YELLOW + questions.get(i));
-                    System.out.println(choices.get(i));
-                    System.out.print(": " + RESET);
-                    String choice = scanner.nextLine().trim();
-                    if (choice.equalsIgnoreCase("A") || choice.equalsIgnoreCase("B") || choice.equalsIgnoreCase("C")) {
-                        if (choice.equalsIgnoreCase(answers.get(i))) correctAnswers++;
-                        break;
+
+        try {
+
+            System.out.println(GREEN + "###########################");
+            System.out.println(CYAN + "|" + PURPLE + "WELCOME TO MY SIMPLE QUIZ" + CYAN + "|");
+            System.out.println(GREEN + "###########################");
+
+            for (int i = 0; i < Quiz.questions.size(); i++) {
+                while (true) {
+                    try {
+                        System.out.println(BLUE + "QUESTION NUMBER: " + RED + (i + 1) + RESET);
+                        System.out.println(YELLOW + Quiz.questions.get(i));
+                        System.out.println(Quiz.choices.get(i));
+                        System.out.print(": " + RESET);
+                        String choice = scanner.nextLine().trim();
+                        if (choice.equalsIgnoreCase("A") || choice.equalsIgnoreCase("B") || choice.equalsIgnoreCase("C")) {
+                            if (choice.equalsIgnoreCase(Quiz.answers.get(i))) correctAnswers++;
+                            break;
+                        }
+                        else {
+                            if (containsSpecialCharacter(choice)) throw new SpecialCharacterAnswerException();
+                            else if (isNumber(choice)) throw new NumberAnswerException();
+                            else if (choice.isEmpty()) throw new BlankAnswerException();
+                            else System.out.println(RED + "A B C only" + RESET);
+                        }
+                    } catch (Exception exception) {
+                        System.out.println(RED + exception.getMessage() + RESET);
                     }
-                    else {
-                        if (containsSpecialCharacter(choice)) throw new SpecialCharacterAnswerException();
-                        else if (isNumber(choice)) throw new NumberAnswerException();
-                        else if (choice.isEmpty()) throw new BlankAnswerException();
-                        else System.out.println(RED + "A B C only" + RESET);
-                    }
-                } catch (Exception exception) {
-                    System.out.println(RED + exception.getMessage() + RESET);
                 }
             }
+        } catch (NullPointerException nullPointerException) {
+            System.out.println(RED + nullPointerException.getMessage() + RESET);
+        } catch (Exception exception) {
+            System.out.println(RED + exception + RESET);
         }
-        System.out.println(viewScore(questions, correctAnswers));
+        System.out.println(viewScore(correctAnswers));
     }
+
     /**
      * Method that contains all the questions.
-     * @param questions the {@code ArrayList<String>} that contains the questions.
-     * @param choices the {@code ArrayList<String>} that contains the choices.
-     * @param answers the {@code ArrayList<String>} that contains the answers.
      */
-    private static void loadQuestions(ArrayList<String> questions, ArrayList<String> choices, ArrayList<String> answers) throws FileNotFoundException {
-
-        Scanner questionsScanner = new Scanner(new File("src\\main\\resources\\questions.txt"));
-        Scanner choicesScanner = new Scanner(new File("src\\main\\resources\\choices.txt"));
-        Scanner answersScanner = new Scanner(new File("src\\main\\resources\\answers.txt"));
-        while (questionsScanner.hasNextLine()) {
-            questions.add(questionsScanner.nextLine());
-            choices.add(choicesScanner.nextLine());
-            answers.add(answersScanner.nextLine());
+    private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws QuestionsNotFoundException {
+        try {
+            Scanner questionsScanner = new Scanner(questionsFile);
+            Scanner choicesScanner = new Scanner(choicesFile);
+            Scanner answersScanner = new Scanner(answersFile);
+            while (questionsScanner.hasNextLine()) {
+                Quiz.questions.add(questionsScanner.nextLine());
+                Quiz.choices.add(choicesScanner.nextLine());
+                Quiz.answers.add(answersScanner.nextLine());
+            }
+            questionsScanner.close();
+            choicesScanner.close();
+            answersScanner.close();
+        } catch (FileNotFoundException fileNotFoundException) {
+            throw new QuestionsNotFoundException();
         }
-        questionsScanner.close();
-        choicesScanner.close();
-        answersScanner.close();
     }
 
     /**
@@ -137,10 +161,14 @@ public class Quiz {
         Matcher my_match = my_pattern.matcher(stringInput);
         return my_match.find();
     }
-    private static String viewScore(ArrayList<String> questions, byte numberOfCorrectAnswers) {
-        if (numberOfCorrectAnswers <= 5) {
-            return GREEN + "SCORE: " + RED + numberOfCorrectAnswers + RESET + " / " + BLUE + questions.size();
+    private static String viewScore(byte numberOfCorrectAnswers) {
+        try {
+            if (numberOfCorrectAnswers <= 5) {
+                return GREEN + "SCORE: " + RED + numberOfCorrectAnswers + RESET + " / " + BLUE + Quiz.questions.size();
+            }
+            return GREEN + "SCORE: " + BLUE + numberOfCorrectAnswers + RESET + " / " + BLUE + Quiz.questions.size();
+        } catch (Exception exception) {
+            return RED + exception.getMessage() + RESET;
         }
-        return GREEN + "SCORE: " + BLUE + numberOfCorrectAnswers + RESET + " / " + BLUE + questions.size();
     }
 }
