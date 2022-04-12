@@ -1,15 +1,16 @@
 package com.pitzzahh;
 
-import exception.*;
-
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Scanner;
+import process.Process;
 import java.io.File;
+import exception.*;
 
 public class Quiz {
 
@@ -20,9 +21,11 @@ public class Quiz {
     private static final String YELLOW = "\u001B[33m";
     private static final String PURPLE = "\u001B[35m";
     private static final String CYAN = "\u001B[36m";
+
     private static final ArrayList<String> questions = new ArrayList<>();
     private static final ArrayList<String> choices = new ArrayList<>();
-    private static final ArrayList<String> answers = new ArrayList<>();
+    private static ArrayList<Character> answers = new ArrayList<>();
+
     public static void main(String[] args) {
 
         final Scanner scanner = new Scanner(System.in);
@@ -38,12 +41,13 @@ public class Quiz {
                 if (choicesFile.exists() && choicesFile.isFile()) {
                     File answersFile = new File(filesPath + "\\answers.txt");
                     if (answersFile.exists() && answersFile.isFile()) {
+                        answers = Process.decrypt(answersFile);
                         importQuestions(questionsFile, choicesFile, answersFile);
                         running = true;
                     } else throw new AnswersNotFoundException();
                 } else throw new ChoicesNotFoundException();
             } else throw new QuestionsNotFoundException();
-        } catch (QuestionsNotFoundException | AnswersNotFoundException | ChoicesNotFoundException fileNotFoundException) {
+        } catch (IOException fileNotFoundException) {
             System.out.println(RED + fileNotFoundException.getMessage() + RESET);
         }
 
@@ -79,9 +83,7 @@ public class Quiz {
      */
     private static void runQuiz(Scanner scanner) {
         byte correctAnswers = 0;
-
         try {
-
             System.out.println(GREEN + "###########################");
             System.out.println(CYAN + "|" + PURPLE + "WELCOME TO MY SIMPLE QUIZ" + CYAN + "|");
             System.out.println(GREEN + "###########################");
@@ -95,7 +97,7 @@ public class Quiz {
                         System.out.print(": " + RESET);
                         String choice = scanner.nextLine().trim();
                         if (choice.equalsIgnoreCase("A") || choice.equalsIgnoreCase("B") || choice.equalsIgnoreCase("C")) {
-                            if (choice.equalsIgnoreCase(Quiz.answers.get(i))) correctAnswers++;
+                            if (choice.equalsIgnoreCase(String.valueOf(Quiz.answers.get(i)))) correctAnswers++;
                             break;
                         }
                         else {
@@ -128,7 +130,7 @@ public class Quiz {
             while (questionsScanner.hasNextLine()) {
                 Quiz.questions.add(questionsScanner.nextLine());
                 Quiz.choices.add(choicesScanner.nextLine());
-                Quiz.answers.add(answersScanner.nextLine());
+                Quiz.answers.add(answersScanner.nextLine().charAt(0));
             }
             questionsScanner.close();
             choicesScanner.close();
