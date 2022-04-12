@@ -60,7 +60,6 @@ public class Quiz {
     /**
      * Method that start the quiz.
      * @param scanner the {@code Scanner} object needed for user input.
-     *
      */
     private static void runQuiz(Scanner scanner) {
         byte correctAnswers = 0;
@@ -126,6 +125,9 @@ public class Quiz {
     }
     /**
      * Method that imports all the questions, choices, and answers from the file.
+     * @param questionsFile the file that contains the questions.
+     * @param choicesFile the file that contains the choices.
+     * @param answersFile the file that contains the answers.
      */
     private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws QuestionsNotFoundException {
         try {
@@ -168,6 +170,13 @@ public class Quiz {
         Matcher my_match = my_pattern.matcher(stringInput);
         return my_match.find();
     }
+
+    /**
+     * Method that output the score on the test.
+     * If the score accumulated is a failing score, it will be colored as red, else blue if it is a passing score.
+     * @param numberOfCorrectAnswers the number of correct answers answered from the questions.
+     * @return a {@code String} representation of the score.
+     */
     private static String viewScore(byte numberOfCorrectAnswers) {
         try {
             if (numberOfCorrectAnswers <= 5) {

@@ -1,6 +1,5 @@
 package process;
 
-import exception.AnswersNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,6 +11,7 @@ public class Process {
     /**
      * Decrypts the answers.
      * @param fileToDecrypt the file of where the answers contained.
+     * @return an {@code ArrayList<Character>} of {@code Characters} decrypted from the answers file.
      * @throws IOException if the file does not exist.
      */
     public static ArrayList<Character> decrypt(File fileToDecrypt) throws IOException {
