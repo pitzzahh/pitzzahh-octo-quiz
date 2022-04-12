@@ -1,7 +1,7 @@
 package exception;
 
 /**
- * inner static class used for exception handling on blank answers.
+ * class used for exception handling on blank answers.
  * This class extends the {@code RuntimeException}
  */
 public class BlankAnswerException extends RuntimeException {

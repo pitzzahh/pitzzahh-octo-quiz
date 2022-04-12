@@ -1,7 +1,7 @@
 package exception;
 
 /**
- * inner static class used for exception handling on number answers.
+ * class used for exception handling on number answers.
  * This class extends the {@code RuntimeException}
  */
 public class NumberAnswerException extends RuntimeException {
