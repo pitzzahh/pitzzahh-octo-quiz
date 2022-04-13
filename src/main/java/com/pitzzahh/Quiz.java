@@ -166,7 +166,7 @@ public class Quiz {
      * @return {@code true} if the {@code String} passed in contains any special character.
      */
     private static boolean containsSpecialCharacter(String stringInput) {
-        Pattern my_pattern = Pattern.compile("[^a-z0-9]", Pattern.CASE_INSENSITIVE);
+        Pattern my_pattern = Pattern.compile("[^a-z\\d]", Pattern.CASE_INSENSITIVE);
         Matcher my_match = my_pattern.matcher(stringInput);
         return my_match.find();
     }
