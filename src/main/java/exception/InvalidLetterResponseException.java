@@ -8,4 +8,7 @@ public class InvalidLetterResponseException extends RuntimeException{
     public InvalidLetterResponseException() {
         super("A B C Response only");
     }
+    public InvalidLetterResponseException(String message) {
+        super(message);
+    }
 }
