@@ -26,7 +26,7 @@ public class Quiz {
     private static final ArrayList<String> choices = new ArrayList<>();
     private static ArrayList<Character> answers = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         final Scanner scanner = new Scanner(System.in);
 
@@ -103,22 +103,29 @@ public class Quiz {
      * Method that verifies the questions, choices, and answers from the file.
      * @return {@code true} if the files are valid.
      */
-    private static boolean verify() {
+    private static boolean verify() throws IOException {
         final Path filesPath = Paths.get("src\\main\\resources"); // directory where the files are stored.
         try {
             File questionsFile = new File(filesPath + "\\questions.txt");
+            File choicesFile = new File(filesPath + "\\choices.txt");
+            File answersFile = new File(filesPath + "\\answers.txt");
             if (questionsFile.exists() && questionsFile.isFile()) {
-                File choicesFile = new File(filesPath + "\\choices.txt");
                 if (choicesFile.exists() && choicesFile.isFile()) {
-                    File answersFile = new File(filesPath + "\\answers.txt");
                     if (answersFile.exists() && answersFile.isFile()) {
                         answers = Process.decrypt(answersFile);
                         importQuestions(questionsFile, choicesFile, answersFile);
                         return true;
                     } else throw new AnswersNotFoundException();
-                } else throw new ChoicesNotFoundException();
-            } else throw new QuestionsNotFoundException();
-        } catch (IOException fileNotFoundException) {
+                } else {
+                    if (!choicesFile.exists() && !choicesFile.isFile()) System.out.println(RED + new ChoicesNotFoundException().getMessage() + RESET);
+                    if (!answersFile.exists() && !answersFile.isFile()) System.out.println(RED + new AnswersNotFoundException().getMessage() + RESET);
+                }
+            } else {
+                if (!questionsFile.exists() && !questionsFile.isFile()) System.out.println(RED + new QuestionsNotFoundException().getMessage() + RESET);
+                if (!choicesFile.exists() && !choicesFile.isFile()) System.out.println(RED + new ChoicesNotFoundException().getMessage() + RESET);
+                if (!answersFile.exists() && !answersFile.isFile()) System.out.println(RED + new AnswersNotFoundException().getMessage() + RESET);
+            }
+        } catch (FileNotFoundException fileNotFoundException) {
             System.out.println(RED + fileNotFoundException.getMessage() + RESET);
         }
         return false;
