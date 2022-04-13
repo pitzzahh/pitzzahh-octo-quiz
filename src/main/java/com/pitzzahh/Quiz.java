@@ -47,7 +47,7 @@ public class Quiz {
                         if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
                         else if (isNumber(response)) throw new NumberResponseException();
                         else if (response.isEmpty()) throw new BlankResponseException();
-                        else System.out.println(RED + "Y or N only" + RESET);
+                        else throw new InvalidLetterResponseException(RED + "Y or N only" + RESET);
                     }
                 } catch (RuntimeException runtimeException) {
                     System.out.println(RED  + runtimeException.getMessage() + RESET);
@@ -71,7 +71,7 @@ public class Quiz {
             for (int i = 0; i < Quiz.questions.size(); i++) {
                 while (true) {
                     try {
-                        System.out.println(BLUE + "QUESTION NUMBER: " + RED + (i + 1) + RESET);
+                        System.out.println(BLUE + "QUESTION NUMBER: " + PURPLE + (i + 1) + RESET);
                         System.out.println(YELLOW + Quiz.questions.get(i));
                         System.out.println(Quiz.choices.get(i));
                         System.out.print(": " + RESET);
