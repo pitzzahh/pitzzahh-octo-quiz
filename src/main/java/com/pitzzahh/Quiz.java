@@ -101,7 +101,9 @@ public class Quiz {
 
     /**
      * Method that verifies the questions, choices, and answers from the file.
-     * @return {@code true} if the files are valid.
+     * Outputs report which files are missing.
+     * @return {@code true} if the files are valid text files.
+     * @throws IOException if error occurred when accessing the files.
      */
     private static boolean verify() throws IOException {
         final Path filesPath = Paths.get("src\\main\\resources"); // directory where the files are stored.
