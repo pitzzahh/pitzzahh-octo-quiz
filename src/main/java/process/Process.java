@@ -9,7 +9,7 @@ public class Process {
     private static final byte KEY = ((((10 * 3) + 4 ) / 4) * 2) - 26;
 
     /**
-     * Decrypts the answers.
+     * Decrypts the answers from the answers file.
      * @param fileToDecrypt the file of where the answers contained.
      * @return an {@code ArrayList<Character>} of {@code Characters} decrypted from the answers file.
      * @throws IOException if the file does not exist.
