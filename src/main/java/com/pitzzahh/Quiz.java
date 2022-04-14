@@ -56,7 +56,6 @@ public class Quiz {
         }
         System.out.println(CYAN + "THANK " + YELLOW + "YOU" + GREEN + " FOR "  + BLUE + "USING " + PURPLE + "MY " + RED + "PROGRAM");
     }
-
     /**
      * Method that start the quiz.
      * @param scanner the {@code Scanner} object needed for user input.
@@ -84,6 +83,7 @@ public class Quiz {
                             if (containsSpecialCharacter(choice)) throw new SpecialCharacterResponseException();
                             else if (isNumber(choice)) throw new NumberResponseException();
                             else if (choice.isEmpty()) throw new BlankResponseException();
+                            else if (choice.length() != 1) throw new MultipleCharactersInputException();
                             else throw new InvalidLetterResponseException();
                         }
                     } catch (RuntimeException runtimeException) {
@@ -98,7 +98,6 @@ public class Quiz {
         }
         System.out.println(viewScore(correctAnswers));
     }
-
     /**
      * Method that verifies the questions, choices, and answers from the file.
      * Outputs report which files are missing.
@@ -137,6 +136,7 @@ public class Quiz {
      * @param questionsFile the file that contains the questions.
      * @param choicesFile the file that contains the choices.
      * @param answersFile the file that contains the answers.
+     * @throws QuestionsNotFoundException if the questions file is missing.
      */
     private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws QuestionsNotFoundException {
         try {
@@ -155,7 +155,6 @@ public class Quiz {
             throw new QuestionsNotFoundException();
         }
     }
-
     /**
      * Method that returns {@code true} or {@code false} based on the {@code String} passed in.
      * @param numberString the {@code String} that might contain all numbers
@@ -168,7 +167,6 @@ public class Quiz {
         } catch (Exception ignored) {}
         return false;
     }
-
     /**
      * Method that returns {@code true} or {@code false} based on the {@code String} passed in.
      * @param stringInput the {@code String} that might contain any special character.
@@ -179,7 +177,6 @@ public class Quiz {
         Matcher my_match = my_pattern.matcher(stringInput);
         return my_match.find();
     }
-
     /**
      * Method that output the score on the test.
      * If the score accumulated is a failing score, it will be colored as red, else blue if it is a passing score.
