@@ -1,6 +1,8 @@
 package com.pitzzahh;
 
 import java.io.FileNotFoundException;
+import com.pitzzahh.process.Process;
+import com.pitzzahh.exception.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.ArrayList;
@@ -8,10 +10,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Scanner;
-import com.pitzzahh.exception.*;
-import com.pitzzahh.process.Process;
 import java.io.File;
-
 
 public class Quiz {
 
@@ -31,32 +30,34 @@ public class Quiz {
 
         final Scanner scanner = new Scanner(System.in);
 
-        if (mainInterface(scanner)) {
-            boolean running = verify();
-            while (running) {
-                runQuiz(scanner);
-                while (true) {
-                    try {
-                        System.out.print(PURPLE + "PLAY AGAIN ? " + GREEN + "(" + BLUE + " Y " + YELLOW + ":" + RED + " N " + GREEN + "): ");
-                        String response = scanner.nextLine().toUpperCase().trim();
-                        if (response.equals("Y") || response.equals("N")) {
-                            if (response.equals("Y")) break;
-                            else running = false;
-                            break;
+        boolean running = verify();
+
+        if (running) {
+            if (mainInterface(scanner)) {
+                while (running) {
+                    runQuiz(scanner);
+                    while (true) {
+                        try {
+                            System.out.print(PURPLE + "PLAY AGAIN ? " + GREEN + "(" + BLUE + " Y " + YELLOW + ":" + RED + " N " + GREEN + "): ");
+                            String response = scanner.nextLine().toUpperCase().trim();
+                            if (response.equals("Y") || response.equals("N")) {
+                                if (response.equals("Y")) break;
+                                else running = false;
+                                break;
+                            }
+                            else {
+                                if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
+                                else if (isNumber(response)) throw new NumberResponseException();
+                                else if (response.isEmpty()) throw new BlankResponseException();
+                                else throw new InvalidLetterResponseException(RED + "Y or N only" + RESET);
+                            }
+                        } catch (RuntimeException runtimeException) {
+                            System.out.println(RED  + runtimeException.getMessage() + RESET);
                         }
-                        else {
-                            if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
-                            else if (isNumber(response)) throw new NumberResponseException();
-                            else if (response.isEmpty()) throw new BlankResponseException();
-                            else throw new InvalidLetterResponseException(RED + "Y or N only" + RESET);
-                        }
-                    } catch (RuntimeException runtimeException) {
-                        System.out.println(RED  + runtimeException.getMessage() + RESET);
                     }
                 }
             }
         }
-
         System.out.println(CYAN + "THANK " + YELLOW + "YOU" + GREEN + " FOR "  + BLUE + "USING " + PURPLE + "MY " + RED + "PROGRAM");
     }
     /**
@@ -135,24 +136,20 @@ public class Quiz {
      * @param questionsFile the file that contains the questions.
      * @param choicesFile the file that contains the choices.
      * @param answersFile the file that contains the answers.
-     * @throws QuestionsNotFoundException if the questions file is missing.
+     * @throws FileNotFoundException if the questions file is missing.
      */
-    private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws QuestionsNotFoundException {
-        try {
-            Scanner questionsScanner = new Scanner(questionsFile);
-            Scanner choicesScanner = new Scanner(choicesFile);
-            Scanner answersScanner = new Scanner(answersFile);
-            while (questionsScanner.hasNextLine()) {
-                Quiz.questions.add(questionsScanner.nextLine());
-                Quiz.choices.add(choicesScanner.nextLine());
-                Quiz.answers.add(answersScanner.nextLine().charAt(0));
-            }
-            questionsScanner.close();
-            choicesScanner.close();
-            answersScanner.close();
-        } catch (FileNotFoundException fileNotFoundException) {
-            throw new QuestionsNotFoundException();
+    private static void importQuestions(File questionsFile, File choicesFile, File answersFile) throws FileNotFoundException {
+        Scanner questionsScanner = new Scanner(questionsFile);
+        Scanner choicesScanner = new Scanner(choicesFile);
+        Scanner answersScanner = new Scanner(answersFile);
+        while (questionsScanner.hasNextLine()) {
+            Quiz.questions.add(questionsScanner.nextLine());
+            Quiz.choices.add(choicesScanner.nextLine());
+            Quiz.answers.add(answersScanner.nextLine().charAt(0));
         }
+        questionsScanner.close();
+        choicesScanner.close();
+        answersScanner.close();
     }
     /**
      * Method that returns {@code true} or {@code false} based on the {@code String} passed in.
