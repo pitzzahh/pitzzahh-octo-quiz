@@ -21,7 +21,6 @@ public class Quiz {
     private static final String YELLOW = "\u001B[33m";
     private static final String PURPLE = "\u001B[35m";
     private static final String CYAN = "\u001B[36m";
-
     private static final ArrayList<String> questions = new ArrayList<>();
     private static final ArrayList<String> choices = new ArrayList<>();
     private static ArrayList<Character> answers = new ArrayList<>();
