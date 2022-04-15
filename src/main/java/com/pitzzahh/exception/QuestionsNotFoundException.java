@@ -1,4 +1,4 @@
-package exception;
+package com.pitzzahh.exception;
 
 import java.io.FileNotFoundException;
 

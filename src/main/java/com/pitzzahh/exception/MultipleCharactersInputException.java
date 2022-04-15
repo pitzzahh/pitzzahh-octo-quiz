@@ -1,4 +1,4 @@
-package exception;
+package com.pitzzahh.exception;
 
 /**
  * class used for exception handling on answers that are multiple sequence of characters.
@@ -7,5 +7,8 @@ package exception;
 public class MultipleCharactersInputException extends RuntimeException {
     public MultipleCharactersInputException() {
         super("Multiple Characters Response Not Allowed");
+    }
+    public MultipleCharactersInputException(String message) {
+        super(message);
     }
 }

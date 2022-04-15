@@ -1,4 +1,4 @@
-package exception;
+package com.pitzzahh.exception;
 
 /**
  * class used for exception handling on number answers.
