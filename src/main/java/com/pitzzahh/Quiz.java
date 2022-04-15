@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.Scanner;
-import process.Process;
+import com.pitzzahh.exception.*;
+import com.pitzzahh.process.Process;
 import java.io.File;
-import exception.*;
+
 
 public class Quiz {
 
@@ -30,30 +31,32 @@ public class Quiz {
 
         final Scanner scanner = new Scanner(System.in);
 
-        boolean running = verify();
-
-        while (running) {
-            runQuiz(scanner);
-            while (true) {
-                try {
-                    System.out.print(PURPLE + "PLAY AGAIN ? " + GREEN + "(" + BLUE + " Y " + YELLOW + ":" + RED + " N " + GREEN + "): ");
-                    String response = scanner.nextLine().toUpperCase().trim();
-                    if (response.equals("Y") || response.equals("N")) {
-                        if (response.equals("Y")) break;
-                        else running = false;
-                        break;
+        if (mainInterface(scanner)) {
+            boolean running = verify();
+            while (running) {
+                runQuiz(scanner);
+                while (true) {
+                    try {
+                        System.out.print(PURPLE + "PLAY AGAIN ? " + GREEN + "(" + BLUE + " Y " + YELLOW + ":" + RED + " N " + GREEN + "): ");
+                        String response = scanner.nextLine().toUpperCase().trim();
+                        if (response.equals("Y") || response.equals("N")) {
+                            if (response.equals("Y")) break;
+                            else running = false;
+                            break;
+                        }
+                        else {
+                            if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
+                            else if (isNumber(response)) throw new NumberResponseException();
+                            else if (response.isEmpty()) throw new BlankResponseException();
+                            else throw new InvalidLetterResponseException(RED + "Y or N only" + RESET);
+                        }
+                    } catch (RuntimeException runtimeException) {
+                        System.out.println(RED  + runtimeException.getMessage() + RESET);
                     }
-                    else {
-                        if (containsSpecialCharacter(response)) throw new SpecialCharacterResponseException();
-                        else if (isNumber(response)) throw new NumberResponseException();
-                        else if (response.isEmpty()) throw new BlankResponseException();
-                        else throw new InvalidLetterResponseException(RED + "Y or N only" + RESET);
-                    }
-                } catch (RuntimeException runtimeException) {
-                    System.out.println(RED  + runtimeException.getMessage() + RESET);
                 }
             }
         }
+
         System.out.println(CYAN + "THANK " + YELLOW + "YOU" + GREEN + " FOR "  + BLUE + "USING " + PURPLE + "MY " + RED + "PROGRAM");
     }
     /**
@@ -63,10 +66,6 @@ public class Quiz {
     private static void runQuiz(Scanner scanner) {
         byte correctAnswers = 0;
         try {
-            System.out.println(GREEN + "###########################");
-            System.out.println(CYAN + "|" + PURPLE + "WELCOME TO MY SIMPLE QUIZ" + CYAN + "|");
-            System.out.println(GREEN + "###########################");
-
             for (int i = 0; i < Quiz.questions.size(); i++) {
                 while (true) {
                     try {
@@ -191,6 +190,31 @@ public class Quiz {
             return GREEN + "SCORE: " + BLUE + numberOfCorrectAnswers + RESET + " / " + BLUE + Quiz.questions.size();
         } catch (Exception exception) {
             return RED + exception.getMessage() + RESET;
+        }
+    }
+    private static boolean mainInterface(Scanner scanner) {
+        while (true) {
+            try {
+                System.out.println(GREEN + "###########################");
+                System.out.println(CYAN + "|" + PURPLE + "WELCOME TO MY SIMPLE QUIZ" + CYAN + "|");
+                System.out.println(GREEN + "###########################");
+                System.out.println(PURPLE + ": " + YELLOW + "1" + PURPLE + " : " + BLUE + "START");
+                System.out.println(PURPLE + ": " + YELLOW + "2" + PURPLE + " : " + RED + "EXIT");
+                System.out.print(GREEN + ": " + RESET);
+                String choice = scanner.nextLine().toUpperCase().trim();
+                if (choice.equals("1") || choice.equals("2")) {
+                    return choice.equals("1");
+                }
+                else {
+                    if (containsSpecialCharacter(choice)) throw new SpecialCharacterResponseException();
+                    else if (choice.isEmpty()) throw new BlankResponseException();
+                    else if (!isNumber(choice) && choice.length() != 1) throw new MultipleCharactersInputException("String Response Not Allowed");
+                    else if (!isNumber(choice)) throw new InvalidLetterResponseException("Character Response Not Allowed");
+                    else throw new InvalidNumberResponseException("1 or 2 Response Only");
+                }
+            } catch (RuntimeException runtimeException) {
+                System.out.println(RED + runtimeException.getMessage() + RESET);
+            }
         }
     }
 }
