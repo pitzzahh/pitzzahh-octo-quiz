@@ -8,6 +8,6 @@ import java.io.FileNotFoundException;
  */
 public class QuestionsNotFoundException extends FileNotFoundException {
     public QuestionsNotFoundException() {
-        super("Questions File Does Not Exist or File is Incorrect!");
+        super("Questions File Does Not Exist or File is Incorrect! ");
     }
 }
