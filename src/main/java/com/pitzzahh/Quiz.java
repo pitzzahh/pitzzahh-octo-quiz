@@ -204,8 +204,10 @@ public class Quiz {
                 else {
                     if (containsSpecialCharacter(choice)) throw new SpecialCharacterResponseException();
                     else if (choice.isEmpty()) throw new BlankResponseException();
-                    else if (!isNumber(choice) && choice.length() != 1) throw new MultipleCharactersInputException("String Response Not Allowed");
-                    else if (!isNumber(choice)) throw new InvalidLetterResponseException("Character Response Not Allowed");
+                    else if (!isNumber(choice)) {
+                        if (choice.length() != 1) throw new MultipleCharactersInputException("String Response Not Allowed");
+                        throw new InvalidLetterResponseException("Character Response Not Allowed");
+                    }
                     else throw new InvalidNumberResponseException("1 or 2 Response Only");
                 }
             } catch (RuntimeException runtimeException) {
